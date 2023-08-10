@@ -1,5 +1,5 @@
 const allowedCors = [
-  'http://movies-explorer-frontend.nomoreparties.co',
+  'http://movies-choice.nomoreparties.co',
   'http://localhost:3000',
   'localhost:3000',
 
