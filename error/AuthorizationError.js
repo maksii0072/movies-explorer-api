@@ -1,10 +1,8 @@
-const { ERROR_UNAUTHORIZED } = require('../utils/errors');
-
-class AuthorizationError extends Error {
+class NotAuth extends Error {
   constructor(message) {
     super(message);
-    this.statusCode = ERROR_UNAUTHORIZED;
+    this.statusCode = 401;
   }
 }
 
-module.exports = AuthorizationError;
+module.exports = NotAuth;

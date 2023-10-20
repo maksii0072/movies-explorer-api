@@ -1,10 +1,8 @@
-const { ERROR_BAD_DATA } = require('../utils/errors');
-
-class BadDataError extends Error {
+class BadRequest extends Error {
   constructor(message) {
     super(message);
-    this.statusCode = ERROR_BAD_DATA;
+    this.statusCode = 400;
   }
 }
 
-module.exports = BadDataError;
+module.exports = BadRequest;

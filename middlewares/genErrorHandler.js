@@ -1,13 +1,14 @@
-const { ERROR_DEFAULT } = require('../utils/errors');
+const errorHandler = (err, req, res, next) => {
+  const { statusCode = 500, message } = err;
 
-// eslint-disable-next-line consistent-return
-function genErrorHandler(err, req, res, next) {
-  if (err.statusCode) {
-    res.status(err.statusCode).send({ message: err.message });
-  } else {
-    res.status(ERROR_DEFAULT).send({ message: `Произошла ошибка: ${err.message}` });
-    return next();
-  }
-}
+  res
+    .status(statusCode)
+    .send({
+      message: statusCode === 500
+        ? 'На сервере произошла ошибка'
+        : message
+    });
+  next();
+};
 
-module.exports = genErrorHandler;
+module.exports = errorHandler;

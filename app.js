@@ -1,34 +1,37 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const { errors } = require('celebrate');
+const bodyParser = require('body-parser');
+const cors = require('cors');
 const helmet = require('helmet');
-const cookieParser = require('cookie-parser');
-const rootRoute = require('./routes/index');
-const genErrorHandler = require('./middlewares/genErrorHandler');
-const limiter = require('./middlewares/limiter');
-const corsHandler = require('./middlewares/cors');
+const { errors } = require('celebrate');
+const { corsHandler } = require('./middlewares/corsHandler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const errorHandler = require('./middlewares/genErrorHandler');
+const routes = require('./routes/index');
+const limiter = require('./middlewares/limiter');
 
 const app = express();
-const { PORT = 3000 } = process.env;
-const { NODE_ENV, DB_CONNECTION } = process.env;
-
-// подключаемся к серверу mongo
-mongoose.connect(NODE_ENV === 'production' ? DB_CONNECTION : 'mongodb://127.0.0.1:27017/bitfilmsdb', {
-  useNewUrlParser: true,
-});
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(corsHandler);
-app.use(cookieParser());
 app.use(helmet());
-app.use(limiter);
-app.use(requestLogger); // подключаем логгер запросов
-app.use('/', rootRoute);
-app.use(errorLogger); // подключаем логгер ошибок
-app.use(errors());
-app.use(genErrorHandler);
+app.use(cors());
 
-app.listen(PORT);
+const { NODE_ENV, PORT = 3000, DB_ADDRESS } = process.env;
+mongoose.connect(NODE_ENV === 'production' ? DB_ADDRESS : 'mongodb://127.0.0.1:27017/bitfilmsdb', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+app.use(limiter);
+app.use(requestLogger);
+
+app.use(corsHandler);
+app.use(limiter);
+app.use(bodyParser.json());
+app.use(routes);
+app.use(errorLogger);
+
+app.use(errors());
+app.use(errorHandler);
+
+app.listen(PORT, () => {
+  console.log('Сервер Запущен!');
+});

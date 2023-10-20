@@ -1,37 +1,18 @@
 const router = require('express').Router();
-const { celebrate, Joi } = require('celebrate');
 const usersRouter = require('./users');
 const moviesRouter = require('./movies');
-const {
-  login,
-  createUser,
-  celebrateParams,
-  logout,
-} = require('../controllers/users');
+const { createUser, login } = require('../controllers/users');
+const { validateUserInfo, validateUserAuth } = require('../middlewares/validation');
 const auth = require('../middlewares/auth');
 const NotFoundError = require('../error/NotFoundError');
 
-const {
-  name,
-  email,
-  password,
-} = celebrateParams;
-
-router.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email, password,
-  }),
-}), login);
-router.post('/signup', celebrate({
-  body: Joi.object().keys({
-    name, email, password,
-  }),
-}), createUser);
-router.post('/signout', auth, logout);
-router.use('/users', auth, usersRouter);
-router.use('/movies', auth, moviesRouter);
-router.all('*', auth, (req, res, next) => {
-  next(new NotFoundError('Страница не найдена'));
+router.post('/signup', validateUserInfo, createUser);
+router.post('/signin', validateUserAuth, login);
+router.use(auth);
+router.use('/users', usersRouter);
+router.use('/movies', moviesRouter);
+router.use('*', (req, res, next) => {
+  next(new NotFoundError('Нет такой страницы'));
 });
 
 module.exports = router;

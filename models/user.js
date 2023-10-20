@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
-const bcrypt = require('bcrypt');
-const AuthorizationError = require('../error/AuthorizationError');
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -9,8 +7,8 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
     validate: {
-      validator: (email) => validator.isEmail(email),
-      message: 'Невалидный email',
+      validator: (v) => validator.isEmail(v),
+      message: 'Некорректный email',
     },
   },
   password: {
@@ -21,23 +19,11 @@ const userSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    minLength: 2,
-    maxLength: 30,
-  },
-});
+    minlength: 2,
+    maxlength: 30,
+  }
+})
 
-userSchema.statics.findUserByCredentials = function findUserByCredentials(email, password) {
-  return this.findOne({ email }).select('+password')
-    .then((user) => {
-      if (!user) {
-        throw new AuthorizationError('Неправильные почта или пароль');
-      }
-      return bcrypt.compare(password, user.password)
-        .then((matched) => {
-          if (!matched) {
-            throw new AuthorizationError('Неправильные почта или пароль');
-          } return user;
-        });
-    });
-};
-module.exports = mongoose.model('user', userSchema);
+const User = mongoose.model('user', userSchema);
+
+module.exports = User;

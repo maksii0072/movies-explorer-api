@@ -15,7 +15,7 @@ const movieSchema = new mongoose.Schema({
     required: true,
   },
   year: {
-    type: String,
+    type: Number,
     required: true,
   },
   description: {
@@ -24,27 +24,27 @@ const movieSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    required: true,
     validate: {
-      validator: (url) => validator.isURL(url, { require_protocol: true }),
-      message: 'Невалидный url',
+      validator: (v) => validator.isURL(v),
+      message: 'Некорректный URL',
     },
+    required: true,
   },
   trailerLink: {
     type: String,
-    required: true,
     validate: {
-      validator: (url) => validator.isURL(url, { require_protocol: true }),
-      message: 'Невалидный url',
+      validator: (v) => validator.isURL(v),
+      message: 'Некорректный URL',
     },
+    required: true,
   },
   thumbnail: {
     type: String,
-    required: true,
     validate: {
-      validator: (url) => validator.isURL(url, { require_protocol: true }),
-      message: 'Невалидный url',
+      validator: (v) => validator.isURL(v),
+      message: 'Некорректный URL',
     },
+    required: true,
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
@@ -53,16 +53,17 @@ const movieSchema = new mongoose.Schema({
   },
   movieId: {
     type: Number,
-    required: true,
+    required: true
   },
   nameRU: {
     type: String,
-    required: true,
+    required: true
   },
   nameEN: {
     type: String,
-    required: true,
+    required: true
   },
-});
+})
 
-module.exports = mongoose.model('movie', movieSchema);
+const Movie = mongoose.model('movie', movieSchema);
+module.exports = Movie;
